@@ -12,5 +12,6 @@
 ## TODO
  * Install and do spark MLlib tutorial.
  * Read new research on big data and spark
-
+ * read through important topics from stanford cs246 page for  project ideas.
+ * 
  
