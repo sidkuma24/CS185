@@ -17,30 +17,48 @@
 # protect=1
 # EOT
 
-yum install mapr-core –y && \
-yum install mapr-fileserver –y && \
-yum install mapr-webserver –y && \
-yum install mapr-zookeeper –y && \
-yum install mapr-cldb –y && \
-yum install mapr-resourcemanager –y && \
-yum install mapr-nodemanager –y && \
-yum install mapr-historyserver –y && \
-yum install mapr-nfs -y && \
+# yum install mapr-core –y && \
+# yum install mapr-fileserver –y && \
+# yum install mapr-webserver –y && \
+# yum install mapr-zookeeper –y && \
+# yum install mapr-cldb –y && \
+# yum install mapr-resourcemanager –y && \
+# yum install mapr-nodemanager –y && \
+# yum install mapr-historyserver –y && \
+# yum install mapr-nfs -y && \
 
-yum install mapr-spark –y && \
-yum install mapr-spark-historyserver –y && \
-yum install mapr-kafka –y && \
+# yum install mapr-spark –y && \
+# yum install mapr-spark-historyserver –y && \
+# yum install mapr-kafka –y && \
 
-cat <<EOF >> /etc/hosts
-127.0.0.1 localhost
-10.0.2.15 cs185-nat
-192.168.56.101 cs185
+# cat <<EOF >> /etc/hosts
+# 127.0.0.1 localhost
+# 10.0.2.15 cs185-nat
+# 192.168.56.101 cs185
+# EOF
+
+# hostname > /opt/mapr/hostname && \
+
+# /opt/mapr/server/configure.sh -C cs185:7222 \
+# -Z cs185:5181 -RM cs185 -HS cs185 \
+# -N my.cluster.com && \
+
+cat <<EOF >> /tmp/disks.txt
+/dev/sdb
+/dev/sdc
+/dev/sdd
 EOF
 
-hostname > /opt/mapr/hostname && \
-
-/opt/mapr/server/configure.sh -C cs185:7222 \
--Z cs185:5181 -RM cs185 -HS cs185 \
--N my.cluster.com && \
-
-
+/opt/mapr/server/disksetup -F /tmp/disks.txt && \
+cat /opt/mapr/conf/disktab && \
+service mapr-zookeeper start  && \
+service mapr-warden start	 && \
+maprcli node list 
+maprcli acl edit -type cluster -user mapr:fc
+cat <<EOF >> /opt/mapr/conf/mapr_fstab
+localhost:/mapr /mapr
+soft,intr,nolock
+localhost:/mapr/<clustername>/user /user soft,intr,nolock	
+EOF
+cat /opt/mapr/conf/clusterid && \
+maprcli dashboard info –json | grep name && \
